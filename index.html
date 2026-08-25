@@ -2,13 +2,161 @@
 <html>
   <head>
     <title>message</title>
-    <style>body{font-size:40px;}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+    <style>
+        #backgroundVideo {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        }
+
+        body {     
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: white;
+        font-family: 'Geist', sans-serif;
+        font-size: 50px;
+        background-color: transparent;
+        transition: background-color 1s ease;
+        }
+
+        body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: black;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease;
+        z-index: -1;
+        }
+
+        a {
+        color: white;
+        text-decoration: none;
+        padding: 20px;
+        position: relative;
+        opacity: 0;
+        transition: opacity 1s ease;
+        }
+
+        h3 {
+        opacity: 0;
+        transition: opacity 1s ease;
+        }
+
+        body.text-visible h3,
+        body.text-visible a {
+        opacity: 1;
+        }
+
+        /* The pseudo-elements enlarge the hit area without affecting layout. */
+        h3,
+        a {
+        position: relative;
+        }
+
+        h3::before,
+        a::before {
+        content: "";
+        position: absolute;
+        inset: -20px;
+        z-index: -1;
+        }
+
+        h3 {
+        padding: 30px;
+        margin: calc(1em - 10px) 0;
+        }
+        a:hover::before {
+        content: "-";
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0 8px;
+        z-index: 0;
+        }
+
+        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover) {
+        background-color: black;
+        }
+
+        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover)::before {
+        opacity: 1;
+        }
+
+        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover) #backgroundVideo {
+        opacity: 0;
+        transition: opacity 1s ease;
+        }
+
+        #backgroundVideo {
+        transition: opacity 1s ease;
+        }
+
+        #blackButton {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 2;
+        padding: 8px 12px;
+        border: 1px solid white;
+        border-radius: 4px;
+        color: white;
+        background: black;
+        font: 14px 'Geist', sans-serif;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 1s ease;
+        }
+
+        body.text-visible #blackButton {
+        opacity: 1;
+        visibility: visible;
+        }
+        </style>
   </head>
   <body>
     <h3>"I have no special talents. I am only passionately curious." Albert Einstein</h3>
     <h3>:) peace</h3>
-    <a target="_blank" href="https://open.spotify.com/playlist/4idY1iszWqMDBKaMcpH1oq?si=162e4caa4e5e4e5d">My Spotify List</a>
-    <a target="_blank" href="https://steamcommunity.com/profiles/76561198762094791/">My Steam Account</a>
-    <a href="https://namemc.com/profile/mrgiraffe_.2">My Minecraft Account</a>
+    <a target="_blank" href="https://open.spotify.com/playlist/4idY1iszWqMDBKaMcpH1oq?si=162e4caa4e5e4e5d">Spotify List</a>
+    <a target="_blank" href="https://steamcommunity.com/profiles/76561198762094791/">Steam Account</a>
+    <a target="_blank" href="https://namemc.com/profile/mrgiraffe_.2">Minecraft Account</a>
+    <button id="blackButton" type="button">Black</button>
+    <video id="backgroundVideo" autoplay muted loop>
+        <source src="C:\Users\Sem Janse\Documents\website\website.mp4" type="video/mp4">
+    </video>
+    <script>
+        const video = document.getElementById("backgroundVideo");
+        document.body.classList.add("video-playing");
+        window.addEventListener("load", () => {
+            video.play().catch(error => {
+                console.log("Autoplay was blocked:", error);
+            });
+        });
+        setTimeout(() => {
+            document.body.classList.add("text-visible");
+        }, 5000);
+        setTimeout(() => {
+            video.pause();
+            video.currentTime = 0;
+            document.body.classList.remove("video-playing");
+        }, 6000);
+        document.getElementById("blackButton").addEventListener("click", () => {
+            document.body.style.backgroundColor = "black";
+            video.style.opacity = "0";
+            document.getElementById("blackButton").style.display = "none";
+        });
+    </script>
   </body>
 </html>
