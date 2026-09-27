@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>-</title>
+    <title>:)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
@@ -16,31 +16,139 @@
         z-index: -1;
         }
 
-        body {     
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        color: white;
+        body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        color: rgba(255, 255, 255, 0.8);
         font-family: 'Geist', sans-serif;
         font-size: 50px;
         background-color: transparent;
-        transition: background-color 1s ease;
         }
 
-        body::before {
-        content: "";
+        .page-section {
         position: fixed;
         inset: 0;
-        background: black;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 1s ease;
-        z-index: -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        }
+
+        #firstSection {
+        z-index: 1;
+        }
+
+        #secondSection {
+        z-index: 0;
+        }
+
+        .section-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        transition: transform 1s ease-in-out;
+        will-change: transform;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        }
+
+        #secondSection,
+        #secondSection::before,
+        #secondSection::after,
+        #secondSection *,
+        #secondSection *::before,
+        #secondSection *::after {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        }
+
+        #galleryViewer {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        border: 0;
+        outline: none;
+        box-shadow: none;
+        }
+
+        #galleryViewer img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border: 0;
+        outline: none;
+        transition: transform 500ms ease-in-out, opacity 500ms ease-in-out;
+        }
+
+        #galleryViewer img.enter-from-right { transform: translateX(100%); opacity: 0; }
+        #galleryViewer img.enter-from-left { transform: translateX(-100%); opacity: 0; }
+        #galleryViewer img.exit-to-left { transform: translateX(-100%); opacity: 0; }
+        #galleryViewer img.exit-to-right { transform: translateX(100%); opacity: 0; }
+
+        #galleryStatus {
+        position: absolute;
+        z-index: 2;
+        top: 1rem;
+        left: 50%;
+        max-width: calc(100vw - 2rem);
+        transform: translateX(-50%);
+        padding: 0.5rem 0.9rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        }
+
+        .page-section.is-hidden {
+        visibility: hidden;
+        }
+
+        #firstSection.is-leaving .section-content {
+        transform: translate(-110vw, -110vh);
+        }
+
+        #firstSection.is-entering .section-content {
+        animation: first-section-enter 1s ease-in-out both;
+        }
+
+        #secondSection.is-leaving .section-content {
+        animation: second-section-exit 1s ease-in-out both;
+        }
+
+        #secondSection.is-entering .section-content {
+        animation: second-section-enter 1s ease-in-out both;
+        }
+
+        @keyframes second-section-enter {
+        from { transform: translate(110vw, 110vh); }
+        to { transform: translate(0, 0); }
+        }
+
+        @keyframes first-section-enter {
+        from { transform: translate(-110vw, -110vh); }
+        to { transform: translate(0, 0); }
+        }
+
+        @keyframes second-section-exit {
+        from { transform: translate(0, 0); }
+        to { transform: translate(110vw, 110vh); }
         }
 
         a {
-        color: white;
+        color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
         padding: 20px;
         position: relative;
@@ -48,17 +156,22 @@
         transition: opacity 1s ease;
         }
 
+        h1,
         h3 {
         opacity: 0;
         transition: opacity 1s ease;
         }
 
+        body.text-visible h1,
         body.text-visible h3,
         body.text-visible a {
         opacity: 1;
         }
 
-        /* The pseudo-elements enlarge the hit area without affecting layout. */
+        #secondSection h1 {
+        opacity: 1;
+        }
+
         h3,
         a {
         position: relative;
@@ -86,58 +199,271 @@
         z-index: 0;
         }
 
-        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover) {
-        background-color: black;
-        }
-
-        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover)::before {
-        opacity: 1;
-        }
-
-        body:not(.video-playing):has(h3:hover, a:hover, #blackButton:hover) #backgroundVideo {
-        opacity: 0;
-        transition: opacity 1s ease;
+        body.text-visible:has(h3:hover, a:hover) #backgroundVideo {
+        filter: brightness(0%);
         }
 
         #backgroundVideo {
-        transition: opacity 1s ease;
+        transition: opacity 1s ease, filter 1s ease;
         }
 
-        #blackButton {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        z-index: 2;
-        padding: 8px 12px;
-        border: 1px solid white;
-        border-radius: 4px;
-        color: white;
-        background: black;
-        font: 14px 'Geist', sans-serif;
-        cursor: pointer;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 1s ease;
+        body.video-stopped #backgroundVideo {
+        filter: brightness(25%);
         }
 
-        body.text-visible #blackButton {
-        opacity: 1;
-        visibility: visible;
-        }
         </style>
   </head>
-  <body>
-    <h3>"I have no special talents. I am only passionately curious." Albert Einstein</h3>
-    <h3>:) peace</h3>
-    <a target="_blank" href="https://open.spotify.com/playlist/4idY1iszWqMDBKaMcpH1oq?si=162e4caa4e5e4e5d">Spotify List</a>
-    <a target="_blank" href="https://steamcommunity.com/profiles/76561198762094791/">Steam Account</a>
-    <a target="_blank" href="https://namemc.com/profile/mrgiraffe_.2">Minecraft Account</a>
-    <button id="blackButton" type="button">Black</button>
+    <body>
+        <section class="page-section" id="firstSection" aria-label="First section">
+            <div class="section-content">
+                <h3>"I have no special talents. I am only passionately curious." Albert Einstein</h3>
+                <h3>:) peace</h3>
+                <a target="_blank" href="https://open.spotify.com/playlist/4idY1iszWqMDBKaMcpH1oq?si=162e4caa4e5e4e5d">Spotify List</a>
+                <a target="_blank" href="https://steamcommunity.com/profiles/76561198762094791/">Steam Account</a>
+                <a target="_blank" href="https://namemc.com/profile/mrgiraffe_.2">Minecraft Account</a>
+            </div>
+        </section>
+        <section class="page-section is-hidden" id="secondSection" aria-label="Second section">
+            <div class="section-content">
+                <div id="galleryViewer" aria-label="JPG image viewer">
+                    <div id="galleryStatus" role="status">Loading images from GitHub…</div>
+                    <img id="galleryImage" alt="">
+                </div>
+            </div>
+        </section>
     <video id="backgroundVideo" autoplay muted loop>
-        <source src="website.mp4" type="video/mp4">
+        <source src="C:\Users\Sem Janse\Documents\website\website.mp4" type="video/mp4">
     </video>
     <script>
         const video = document.getElementById("backgroundVideo");
+        const sections = [
+            document.getElementById("firstSection"),
+            document.getElementById("secondSection")
+        ];
+        const transitionDuration = 1000;
+        const transitionCooldown = 700;
+        let activeSection = 0;
+        let isTransitioning = false;
+        let galleryImages = [];
+        let currentImageIndex = 0;
+        let currentImage = document.getElementById("galleryImage");
+        let isImageTransitioning = false;
+
+        const galleryStatus = document.getElementById("galleryStatus");
+
+        function getGitHubPagesLocation() {
+            const hostParts = window.location.hostname.split(".");
+            if (hostParts.length < 3 || hostParts.slice(-2).join(".") !== "github.io") return null;
+
+            const owner = hostParts[0];
+            const isUserSite = hostParts.length === 3;
+            const pathParts = decodeURIComponent(window.location.pathname)
+                .split("/")
+                .filter(Boolean);
+            let repository;
+            let folderParts;
+
+            if (isUserSite) {
+                repository = `${owner}.github.io`;
+                folderParts = pathParts;
+            } else {
+                repository = pathParts.shift();
+                folderParts = pathParts;
+            }
+
+            if (folderParts.length && /\.html?$/i.test(folderParts[folderParts.length - 1])) {
+                folderParts.pop();
+            }
+
+            return { owner, repository, folder: folderParts.join("/") };
+        }
+
+        async function loadGitHubImages() {
+            const source = getGitHubPagesLocation();
+            if (!source || !source.repository) {
+                galleryStatus.textContent = "not working";
+                return;
+            }
+
+            const encodedFolder = source.folder
+                ? `/${source.folder.split("/").map(encodeURIComponent).join("/")}`
+                : "";
+            const apiUrl = `https://api.github.com/repos/${encodeURIComponent(source.owner)}/${encodeURIComponent(source.repository)}/contents${encodedFolder}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: { Accept: "application/vnd.github+json" }
+                });
+                if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
+
+                const entries = await response.json();
+                galleryImages = entries
+                    .filter(entry => entry.type === "file" && /\.jpe?g$/i.test(entry.name) && entry.download_url)
+                    .sort((first, second) => first.name.localeCompare(second.name, undefined, { numeric: true, sensitivity: "base" }))
+                    .map(entry => ({ name: entry.name, url: entry.download_url }));
+
+                if (galleryImages.length === 0) {
+                    galleryStatus.textContent = "No JPG or JPEG images found in this GitHub folder.";
+                    return;
+                }
+
+                currentImage.src = galleryImages[0].url;
+                currentImage.alt = galleryImages[0].name;
+                updateGalleryStatus();
+            } catch (error) {
+                console.error("Could not load gallery images from GitHub:", error);
+                galleryStatus.textContent = "Could not load images. Check that this is a public GitHub Pages repository.";
+            }
+        }
+
+        function updateGalleryStatus() {
+            if (galleryImages.length) {
+                galleryStatus.textContent = `${currentImageIndex + 1} / ${galleryImages.length} · ${galleryImages[currentImageIndex].name}`;
+            }
+        }
+
+        async function showGalleryImage(direction) {
+            if (isImageTransitioning) return;
+            if (galleryImages.length === 0) {
+                if (direction < 0) goToSection(-1);
+                return;
+            }
+            const nextIndex = currentImageIndex + direction;
+            if (nextIndex < 0) {
+                goToSection(-1);
+                return;
+            }
+            if (nextIndex >= galleryImages.length) return;
+
+            isImageTransitioning = true;
+            const incomingImage = new Image();
+            incomingImage.alt = galleryImages[nextIndex].name;
+            incomingImage.src = galleryImages[nextIndex].url;
+            incomingImage.className = direction > 0 ? "enter-from-right" : "enter-from-left";
+            try {
+                await incomingImage.decode();
+            } catch {
+                isImageTransitioning = false;
+                return;
+            }
+
+            document.getElementById("galleryViewer").append(incomingImage);
+            incomingImage.getBoundingClientRect();
+            requestAnimationFrame(() => {
+                incomingImage.classList.remove("enter-from-right", "enter-from-left");
+                currentImage.classList.add(direction > 0 ? "exit-to-left" : "exit-to-right");
+            });
+
+            window.setTimeout(() => {
+                currentImage.remove();
+                incomingImage.id = "galleryImage";
+                currentImage = incomingImage;
+                currentImageIndex = nextIndex;
+                updateGalleryStatus();
+                isImageTransitioning = false;
+            }, 500);
+        }
+
+        loadGitHubImages();
+
+        function goToSection(direction) {
+            if (document.body.classList.contains("video-playing") || isTransitioning || isImageTransitioning) return;
+
+            const nextSection = Math.max(0, Math.min(sections.length - 1, activeSection + direction));
+            if (nextSection === activeSection) return;
+
+            isTransitioning = true;
+            if (nextSection > activeSection) {
+                if (nextSection === 1) {
+                    if (galleryImages.length > 0 && currentImageIndex !== 0) {
+                        currentImageIndex = 0;
+                        currentImage.src = galleryImages[0].url;
+                        currentImage.alt = galleryImages[0].name;
+                        updateGalleryStatus();
+                    }
+                }
+                sections[activeSection].classList.add("is-leaving");
+                sections[nextSection].style.zIndex = "2";
+                sections[nextSection].classList.remove("is-hidden");
+                sections[nextSection].classList.add("is-entering");
+            } else {
+                sections[nextSection].style.zIndex = "2";
+                sections[nextSection].classList.remove("is-hidden");
+                sections[nextSection].classList.add("is-entering");
+                sections[activeSection].classList.add("is-leaving");
+            }
+
+            window.setTimeout(() => {
+                sections[activeSection].classList.add("is-hidden");
+                sections[activeSection].style.zIndex = "0";
+                sections[nextSection].style.zIndex = "1";
+                sections[activeSection].classList.remove("is-leaving");
+                sections[nextSection].classList.remove("is-entering");
+                activeSection = nextSection;
+                window.setTimeout(() => {
+                    isTransitioning = false;
+                }, transitionCooldown);
+            }, transitionDuration);
+        }
+
+        window.addEventListener("wheel", event => {
+            if (document.body.classList.contains("video-playing") || isTransitioning || isImageTransitioning) {
+                event.preventDefault();
+                return;
+            }
+
+            if (activeSection === 1) {
+                const delta = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+                if (delta !== 0) {
+                    event.preventDefault();
+                    showGalleryImage(delta > 0 ? 1 : -1);
+                }
+                return;
+            }
+
+            event.preventDefault();
+            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                goToSection(event.deltaY > 0 ? 1 : -1);
+            } else {
+                goToSection(event.deltaX > 0 ? 1 : -1);
+            }
+        }, { passive: false });
+
+        let touchStartY = 0;
+        window.addEventListener("touchstart", event => {
+            touchStartY = event.changedTouches[0].screenY;
+        }, { passive: true });
+        window.addEventListener("touchend", event => {
+            const distance = touchStartY - event.changedTouches[0].screenY;
+            if (Math.abs(distance) <= 40) return;
+            if (activeSection === 0) {
+                goToSection(distance > 0 ? 1 : -1);
+            } else {
+                showGalleryImage(distance > 0 ? 1 : -1);
+            }
+        }, { passive: true });
+
+        window.addEventListener("keydown", event => {
+            if (activeSection === 1) {
+                if (["ArrowUp", "ArrowLeft", "PageUp"].includes(event.key)) {
+                    event.preventDefault();
+                    showGalleryImage(-1);
+                } else if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(event.key)) {
+                    event.preventDefault();
+                    showGalleryImage(1);
+                }
+                return;
+            }
+
+            if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+                event.preventDefault();
+                goToSection(1);
+            } else if (["ArrowUp", "PageUp"].includes(event.key)) {
+                event.preventDefault();
+                goToSection(-1);
+            }
+        });
+
         document.body.classList.add("video-playing");
         window.addEventListener("load", () => {
             video.play().catch(error => {
@@ -151,12 +477,8 @@
             video.pause();
             video.currentTime = 0;
             document.body.classList.remove("video-playing");
+            document.body.classList.add("video-stopped");
         }, 6000);
-        document.getElementById("blackButton").addEventListener("click", () => {
-            document.body.style.backgroundColor = "black";
-            video.style.opacity = "0";
-            document.getElementById("blackButton").style.display = "none";
-        });
     </script>
   </body>
 </html>
