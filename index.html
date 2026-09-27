@@ -232,7 +232,7 @@
             </div>
         </section>
     <video id="backgroundVideo" autoplay muted loop>
-        <source src="C:\Users\Sem Janse\Documents\website\website.mp4" type="video/mp4">
+        <source src="./website.mp4" type="video/mp4">
     </video>
     <script>
         const video = document.getElementById("backgroundVideo");
@@ -312,7 +312,7 @@
                 updateGalleryStatus();
             } catch (error) {
                 console.error("Could not load gallery images from GitHub:", error);
-                galleryStatus.textContent = "Could not load images. Check that this is a public GitHub Pages repository.";
+                galleryStatus.textContent = "Could not load images";
             }
         }
 
