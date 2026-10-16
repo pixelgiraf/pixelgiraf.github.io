@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>:)</title>
+    <title>_</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
     <style>
         #backgroundVideo {
         position: fixed;
@@ -22,8 +22,22 @@
         overflow: hidden;
         color: rgba(255, 255, 255, 0.8);
         font-family: 'Geist', sans-serif;
-        font-size: 50px;
-        background-color: transparent;
+        font-size: clamp(0.75rem, min(4vw, 6vh), 3.125rem);
+        background: #000;
+        }
+
+        body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background: url("./background.png?v=2") center / cover no-repeat;
+        transition: opacity 1s ease;
+        pointer-events: none;
+        }
+
+        body.video-stopped.text-visible:has(h3:hover, a:hover)::before {
+        opacity: 0;
         }
 
         .page-section {
@@ -40,10 +54,14 @@
         }
 
         #firstSection {
+        --section-x: -110vw;
+        --section-y: -110vh;
         z-index: 1;
         }
 
         #secondSection {
+        --section-x: 110vw;
+        --section-y: 110vh;
         z-index: 0;
         }
 
@@ -54,7 +72,6 @@
         justify-content: center;
         width: 100%;
         height: 100%;
-        transition: transform 1s ease-in-out;
         will-change: transform;
         border: none;
         outline: none;
@@ -90,15 +107,13 @@
         width: 100%;
         height: 100%;
         object-fit: contain;
+        opacity: 0;
         border: 0;
         outline: none;
-        transition: transform 500ms ease-in-out, opacity 500ms ease-in-out;
+        transition: opacity 500ms ease-in-out;
         }
 
-        #galleryViewer img.enter-from-right { transform: translateX(100%); opacity: 0; }
-        #galleryViewer img.enter-from-left { transform: translateX(-100%); opacity: 0; }
-        #galleryViewer img.exit-to-left { transform: translateX(-100%); opacity: 0; }
-        #galleryViewer img.exit-to-right { transform: translateX(100%); opacity: 0; }
+        #galleryViewer img.is-visible { opacity: 1; }
 
         #galleryStatus {
         position: absolute;
@@ -109,48 +124,35 @@
         transform: translateX(-50%);
         padding: 0.5rem 0.9rem;
         border-radius: 0.5rem;
-        font-size: 1rem;
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
         }
 
         .page-section.is-hidden {
         visibility: hidden;
         }
 
-        #firstSection.is-leaving .section-content {
-        transform: translate(-110vw, -110vh);
+        .page-section.is-entering .section-content {
+        animation: section-enter 1s ease-in-out both;
         }
 
-        #firstSection.is-entering .section-content {
-        animation: first-section-enter 1s ease-in-out both;
+        .page-section.is-leaving .section-content {
+        animation: section-exit 1s ease-in-out both;
         }
 
-        #secondSection.is-leaving .section-content {
-        animation: second-section-exit 1s ease-in-out both;
-        }
-
-        #secondSection.is-entering .section-content {
-        animation: second-section-enter 1s ease-in-out both;
-        }
-
-        @keyframes second-section-enter {
-        from { transform: translate(110vw, 110vh); }
+        @keyframes section-enter {
+        from { transform: translate(var(--section-x), var(--section-y)); }
         to { transform: translate(0, 0); }
         }
 
-        @keyframes first-section-enter {
-        from { transform: translate(-110vw, -110vh); }
-        to { transform: translate(0, 0); }
-        }
-
-        @keyframes second-section-exit {
+        @keyframes section-exit {
         from { transform: translate(0, 0); }
-        to { transform: translate(110vw, 110vh); }
+        to { transform: translate(var(--section-x), var(--section-y)); }
         }
 
         a {
         color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
-        padding: 20px;
+        padding: clamp(0.25rem, 1vh, 1.25rem);
         position: relative;
         opacity: 0;
         transition: opacity 1s ease;
@@ -186,8 +188,8 @@
         }
 
         h3 {
-        padding: 30px;
-        margin: calc(1em - 10px) 0;
+        padding: clamp(0.25rem, 1.5vh, 1.875rem);
+        margin: clamp(0rem, 1vh, 1.25rem) 0;
         }
         a:hover::before {
         content: "-";
@@ -199,16 +201,16 @@
         z-index: 0;
         }
 
-        body.text-visible:has(h3:hover, a:hover) #backgroundVideo {
-        filter: brightness(0%);
-        }
-
         #backgroundVideo {
         transition: opacity 1s ease, filter 1s ease;
         }
 
+        body.video-dimming #backgroundVideo {
+        filter: brightness(45%);
+        }
+
         body.video-stopped #backgroundVideo {
-        filter: brightness(25%);
+        opacity: 0;
         }
 
         </style>
@@ -226,13 +228,13 @@
         <section class="page-section is-hidden" id="secondSection" aria-label="Second section">
             <div class="section-content">
                 <div id="galleryViewer" aria-label="JPG image viewer">
-                    <div id="galleryStatus" role="status">Loading images from GitHub…</div>
+                    <div id="galleryStatus" role="status">Loading Images…</div>
                     <img id="galleryImage" alt="">
                 </div>
             </div>
         </section>
-    <video id="backgroundVideo" autoplay muted loop>
-        <source src="./website.mp4" type="video/mp4">
+    <video id="backgroundVideo" muted preload="none">
+        <source src="website.mp4" type="video/mp4">
     </video>
     <script>
         const video = document.getElementById("backgroundVideo");
@@ -248,8 +250,48 @@
         let currentImageIndex = 0;
         let currentImage = document.getElementById("galleryImage");
         let isImageTransitioning = false;
+        let hasDisplayedGalleryImage = false;
+        let isStoppingVideo = false;
 
         const galleryStatus = document.getElementById("galleryStatus");
+
+        function animatePageTitle() {
+            const titleFrames = [
+                { title: "\u200B", duration: 500 },
+                { title: ":)", duration: 1000 },
+                { title: "\u200B", duration: 500 },
+                { title: () => activeSection === 0 ? "main" : "My Photos", duration: 1000 }
+            ];
+            let frameIndex = 0;
+
+            function showNextTitleFrame() {
+                const frame = titleFrames[frameIndex];
+                document.title = typeof frame.title === "function" ? frame.title() : frame.title;
+                frameIndex = (frameIndex + 1) % titleFrames.length;
+                window.setTimeout(showNextTitleFrame, frame.duration);
+            }
+
+            showNextTitleFrame();
+        }
+
+        function stopBackgroundVideo() {
+            if (isStoppingVideo) return;
+            isStoppingVideo = true;
+            document.body.classList.add("video-dimming");
+
+            window.setTimeout(() => {
+                video.pause();
+                document.body.classList.remove("video-playing", "video-dimming");
+                document.body.classList.add("video-stopped");
+
+                window.setTimeout(() => {
+                    video.removeAttribute("src");
+                    video.querySelector("source").removeAttribute("src");
+                    video.load();
+                    animatePageTitle();
+                }, 1000);
+            }, 1000);
+        }
 
         function getGitHubPagesLocation() {
             const hostParts = window.location.hostname.split(".");
@@ -281,7 +323,7 @@
         async function loadGitHubImages() {
             const source = getGitHubPagesLocation();
             if (!source || !source.repository) {
-                galleryStatus.textContent = "not working";
+                galleryStatus.textContent = "something went wrong :0";
                 return;
             }
 
@@ -303,16 +345,14 @@
                     .map(entry => ({ name: entry.name, url: entry.download_url }));
 
                 if (galleryImages.length === 0) {
-                    galleryStatus.textContent = "No JPG or JPEG images found in this GitHub folder.";
+                    galleryStatus.textContent = "something went wrong :0";
                     return;
                 }
 
-                currentImage.src = galleryImages[0].url;
-                currentImage.alt = galleryImages[0].name;
-                updateGalleryStatus();
+                if (activeSection === 1) loadGalleryImage(currentImageIndex);
             } catch (error) {
-                console.error("Could not load gallery images from GitHub:", error);
-                galleryStatus.textContent = "Could not load images";
+                console.error("Could not load gallery images from GitHub", error);
+                galleryStatus.textContent = "something went wrong :0";
             }
         }
 
@@ -322,7 +362,42 @@
             }
         }
 
-        async function showGalleryImage(direction) {
+        async function loadGalleryImage(index) {
+            if (isImageTransitioning || index >= galleryImages.length) return;
+            isImageTransitioning = true;
+
+            if (hasDisplayedGalleryImage) {
+                currentImage.classList.remove("is-visible");
+                await new Promise(resolve => window.setTimeout(resolve, 500));
+            }
+
+            const image = galleryImages[index];
+            currentImage.removeAttribute("src");
+            currentImage.alt = image.name;
+            currentImage.src = image.url;
+            galleryStatus.textContent = `Loading ${image.name}…`;
+            try {
+                await currentImage.decode();
+            } catch (error) {
+                console.error(`Could not load gallery image "${image.name}":`, error);
+                currentImage.removeAttribute("src");
+                currentImage.alt = "";
+                hasDisplayedGalleryImage = false;
+                galleryStatus.textContent = `something went wrong :0 with ${image.name}.`;
+                isImageTransitioning = false;
+                return;
+            }
+
+            currentImageIndex = index;
+            hasDisplayedGalleryImage = true;
+            updateGalleryStatus();
+            requestAnimationFrame(() => currentImage.classList.add("is-visible"));
+            window.setTimeout(() => {
+                isImageTransitioning = false;
+            }, 500);
+        }
+
+        function showGalleryImage(direction) {
             if (isImageTransitioning) return;
             if (galleryImages.length === 0) {
                 if (direction < 0) goToSection(-1);
@@ -335,33 +410,7 @@
             }
             if (nextIndex >= galleryImages.length) return;
 
-            isImageTransitioning = true;
-            const incomingImage = new Image();
-            incomingImage.alt = galleryImages[nextIndex].name;
-            incomingImage.src = galleryImages[nextIndex].url;
-            incomingImage.className = direction > 0 ? "enter-from-right" : "enter-from-left";
-            try {
-                await incomingImage.decode();
-            } catch {
-                isImageTransitioning = false;
-                return;
-            }
-
-            document.getElementById("galleryViewer").append(incomingImage);
-            incomingImage.getBoundingClientRect();
-            requestAnimationFrame(() => {
-                incomingImage.classList.remove("enter-from-right", "enter-from-left");
-                currentImage.classList.add(direction > 0 ? "exit-to-left" : "exit-to-right");
-            });
-
-            window.setTimeout(() => {
-                currentImage.remove();
-                incomingImage.id = "galleryImage";
-                currentImage = incomingImage;
-                currentImageIndex = nextIndex;
-                updateGalleryStatus();
-                isImageTransitioning = false;
-            }, 500);
+            loadGalleryImage(nextIndex);
         }
 
         loadGitHubImages();
@@ -373,25 +422,11 @@
             if (nextSection === activeSection) return;
 
             isTransitioning = true;
-            if (nextSection > activeSection) {
-                if (nextSection === 1) {
-                    if (galleryImages.length > 0 && currentImageIndex !== 0) {
-                        currentImageIndex = 0;
-                        currentImage.src = galleryImages[0].url;
-                        currentImage.alt = galleryImages[0].name;
-                        updateGalleryStatus();
-                    }
-                }
-                sections[activeSection].classList.add("is-leaving");
-                sections[nextSection].style.zIndex = "2";
-                sections[nextSection].classList.remove("is-hidden");
-                sections[nextSection].classList.add("is-entering");
-            } else {
-                sections[nextSection].style.zIndex = "2";
-                sections[nextSection].classList.remove("is-hidden");
-                sections[nextSection].classList.add("is-entering");
-                sections[activeSection].classList.add("is-leaving");
-            }
+            if (nextSection === 1) currentImageIndex = 0;
+            sections[activeSection].classList.add("is-leaving");
+            sections[nextSection].style.zIndex = "2";
+            sections[nextSection].classList.remove("is-hidden");
+            sections[nextSection].classList.add("is-entering");
 
             window.setTimeout(() => {
                 sections[activeSection].classList.add("is-hidden");
@@ -400,6 +435,15 @@
                 sections[activeSection].classList.remove("is-leaving");
                 sections[nextSection].classList.remove("is-entering");
                 activeSection = nextSection;
+                if (activeSection === 1 && galleryImages.length > 0) {
+                    loadGalleryImage(currentImageIndex);
+                } else if (activeSection === 0) {
+                    currentImage.removeAttribute("src");
+                    currentImage.alt = "";
+                    currentImage.classList.remove("is-visible");
+                    hasDisplayedGalleryImage = false;
+                    currentImageIndex = 0;
+                }
                 window.setTimeout(() => {
                     isTransitioning = false;
                 }, transitionCooldown);
@@ -468,17 +512,16 @@
         window.addEventListener("load", () => {
             video.play().catch(error => {
                 console.log("Autoplay was blocked:", error);
+                stopBackgroundVideo();
             });
         });
+        video.addEventListener("ended", stopBackgroundVideo, { once: true });
+        video.addEventListener("error", stopBackgroundVideo, { once: true });
         setTimeout(() => {
             document.body.classList.add("text-visible");
         }, 5000);
-        setTimeout(() => {
-            video.pause();
-            video.currentTime = 0;
-            document.body.classList.remove("video-playing");
-            document.body.classList.add("video-stopped");
-        }, 6000);
     </script>
   </body>
+  <!-- Stay curious -->
+  <!-- Why are you looking inside the code? Do you expect something?-->
 </html>
